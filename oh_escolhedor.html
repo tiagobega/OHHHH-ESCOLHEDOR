@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <style>
+      h1 {
+        padding: 0px;
+        margin-top: 20px;
+      }
+
+      #happyButton,
+      #submitButton {
+        margin-top: 100px;
+        margin-right: 20px;
+        margin-left: 20px;
+      }
+
+      #list {
+        height: 400px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row center-align">
+        <div class="col s12">
+          <h1>ÓHHHH ESCOLHEDOR!!!!!</h1>
+        </div>
+      </div>
+      <div class="row center-align">
+        <div class="col s12">
+          <button class="btn green" id="addButton">adicionar linha</button>
+        </div>
+      </div>
+
+      <div id="list">
+        <div id="input_0" class="game row">
+          <div class="col s11">
+            <div class="input-field">
+              <input type="text" class="jogo" id="jogo1" placeholder="opção" />
+            </div>
+          </div>
+          <div class="menu col s1">
+            <a class="btn red" onclick="deleteGame(0)">-</a>
+          </div>
+        </div>
+
+        <div id="input_1" class="game input-field row">
+          <div class="col s11">
+            <div class="input-field">
+              <input type="text" class="jogo" id="jogo2" placeholder="opção" />
+            </div>
+          </div>
+          <div class="menu col s1">
+            <a class="btn red" onclick="deleteGame(1)">-</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="result row center-align">
+        <div class="col s12">
+          <a id="submitButton" class="btn btn-submit">Escolher</a>
+        </div>
+      </div>
+
+      <div class="row center-align">
+        <div class="col s12">
+          <h3 id="resposta"></h3>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("submitButton").addEventListener("click", find);
+      document.getElementById("addButton").addEventListener("click", addGame);
+
+      function addGame() {
+        let list = document.getElementById("list");
+
+        let counter = document.getElementsByClassName("game").length;
+
+        let row = document.createElement("div");
+
+        row.id = `input_${counter}`;
+        row.classList.add("game", "row");
+        row.innerHTML = `<div class="col s11">
+                    <div class="input-field">
+                        <input type="text" class="jogo" id="jogo${counter}" placeholder="opção">
+                    </div>
+                </div>
+                <div class="menu col s1">
+                    <a class="btn red" onclick="deleteGame(${counter})">-</a>
+                </div>`;
+
+        list.appendChild(row);
+      }
+
+      function deleteGame(num) {
+        let counter = document.getElementsByClassName("game").length;
+
+        if (counter <= 2) {
+          M.toast({ html: "precisa ter no minimo 2 itens" });
+          return;
+        }
+
+        document.getElementById("input_" + num).remove();
+        rename();
+      }
+
+      function rename() {
+        let games = [].slice.call(document.getElementsByClassName("game"));
+
+        games.map((game, index) => {
+          game.id = `input_${index}`;
+          game
+            .getElementsByClassName("btn")[0]
+            .setAttribute("onclick", "deleteGame(" + index + ")");
+        });
+      }
+
+      function find() {
+        doTry(75, 1);
+      }
+
+      function doTry(tries, timestried) {
+        if (tries == 0) {
+          return;
+        } else {
+          setTimeout(function () {
+            let inputsArr = [].slice.call(
+              document.getElementsByClassName("jogo")
+            );
+
+            let filteredInput = inputsArr
+              .map((inputJogo) => {
+                if (inputJogo.value !== null) {
+                  return inputJogo.value;
+                }
+              })
+              .filter((x) => x !== "");
+
+            if (filteredInput.length < 1) {
+              M.toast({ html: "Insira pelo menos um jogo na lista" });
+              return;
+            }
+            let random = getRandomValue(filteredInput.length);
+            let value = filteredInput[random];
+            document.getElementById("resposta").innerText = value;
+
+            doTry(tries - 1, timestried + 1);
+          }, 10 + timestried);
+        }
+      }
+
+      function getRandomValue(max) {
+        return Math.floor(Math.random() * max);
+      }
+    </script>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  </body>
+</html>
